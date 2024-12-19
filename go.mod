@@ -24,6 +24,12 @@ require (
 require (
 	github.com/bxcodec/faker/v4 v4.0.0-beta.3 // direct
 	github.com/google/uuid v1.6.0 // direct
-	github.com/gosimple/slug v1.14.0 // indirect
+	github.com/gosimple/slug v1.14.0 // direct
 	github.com/gosimple/unidecode v1.0.1 // indirect
+)
+
+require (
+	github.com/cpuguy83/go-md2man/v2 v2.0.5 // indirect
+	github.com/russross/blackfriday/v2 v2.1.0 // indirect
+	github.com/urfave/cli v1.22.16 // indirect
 )

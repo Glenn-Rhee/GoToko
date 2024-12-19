@@ -1,6 +1,7 @@
 package app
 
 import (
+	"flag"
 	"fmt"
 	"log"
 	"net/http"
@@ -9,6 +10,7 @@ import (
 	"github.com/Glenn-Rhee/gotoko/database/seeders"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"github.com/urfave/cli"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -26,10 +28,7 @@ type AppConfig struct {
 
 func (server *Server) Initialize(appConfig AppConfig) {
 	fmt.Println("Welcome to" + appConfig.AppName)
-	server.InitializeDB()
 	server.InitializeRoutes()
-
-	seeders.DBSeed(server.DB)
 }
 
 func (server *Server) InitializeDB() {
@@ -41,8 +40,11 @@ func (server *Server) InitializeDB() {
 		panic("Failed to connect database")
 	}
 
+}
+
+func (server *Server) DbMigrate(){
 	for _, model := range RegisterModel() {
-		err = server.DB.Debug().AutoMigrate(model.Model)
+		err := server.DB.Debug().AutoMigrate(model.Model)
 
 		if err != nil {
 			log.Fatal(err)
@@ -50,6 +52,37 @@ func (server *Server) InitializeDB() {
 	}
 
 	fmt.Println("Database migrated successfully!")
+}
+
+func (server *Server) InitCommand(config AppConfig) {
+	server.InitializeDB()
+
+	cmdApp := cli.NewApp()
+	cmdApp.Commands = []cli.Command{
+		{
+			Name: "db:migrate",
+			Action: func(c *cli.Context) error{
+				server.DbMigrate()
+				return nil
+			},
+		},
+		{
+			Name: "db:seed",
+			Action: func(c *cli.Context) error{
+				err := seeders.DBSeed(server.DB)
+				if err != nil {
+					log.Fatal(err)
+				}
+
+				return nil
+			},
+		},
+	}
+
+	err := cmdApp.Run(os.Args)
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func (server *Server) Run(address string) {
@@ -77,7 +110,14 @@ func Run(){
 
 	appConfig.AppName = getEnv("APP_NAME", "GoToko")
 	appConfig.AppEnv = getEnv("APP_ENV", "Development")
-	appConfig.AppPort =getEnv("APP_PORT", ":8081")
+	appConfig.AppPort = getEnv("APP_PORT", ":8081")
+
+	flag.Parse()
+	arg := flag.Arg(0)
+
+	if arg != "" {
+		server.InitCommand(appConfig)
+	}
 
 	server.Initialize(appConfig)
 	server.Run(appConfig.AppPort)

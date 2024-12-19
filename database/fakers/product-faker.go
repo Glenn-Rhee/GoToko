@@ -31,7 +31,7 @@ func ProductFaker(db *gorm.DB) *models.Product{
 		Price: decimal.NewFromFloat(fakePrice()),
 		Stock: rand.Intn(100),
 		Weight: decimal.NewFromFloat(rand.Float64()),
-		ShortDescription: faker.Paragraph()[:100],
+		ShortDescription: faker.Paragraph()[:20],
 		Description: faker.Paragraph(),
 		Status: 1,
 		CreatedAt: time.Time{},
