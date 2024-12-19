@@ -6,9 +6,9 @@ import (
 	"net/http"
 	"os"
 
-	"gorm.io/driver/mysql"
 	"github.com/gorilla/mux"
 	"github.com/joho/godotenv"
+	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
 
@@ -25,7 +25,11 @@ type AppConfig struct {
 
 func (server *Server) Initialize(appConfig AppConfig) {
 	fmt.Println("Welcome to" + appConfig.AppName)
-	
+	server.InitializeDB()
+	server.InitializeRoutes()
+}
+
+func (server *Server) InitializeDB() {
 	var err error
 	dsn := "root:@tcp(127.0.0.1:3306)/gotoko?charset=utf8mb4&parseTime=True&loc=Local"
 	server.DB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
@@ -34,9 +38,15 @@ func (server *Server) Initialize(appConfig AppConfig) {
 		panic("Failed to connect database")
 	}
 
+	for _, model := range RegisterModel() {
+		err = server.DB.Debug().AutoMigrate(model.Model)
 
-	server.Router = mux.NewRouter()
-	server.InitializeRoutes()
+		if err != nil {
+			log.Fatal(err)
+		}
+	}
+
+	fmt.Println("Database migrated successfully!")
 }
 
 func (server *Server) Run(address string) {
