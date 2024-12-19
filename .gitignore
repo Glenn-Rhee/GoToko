@@ -37,3 +37,6 @@ dump.rdb
 tmp
 .env
 coverage.out
+.air.toml
+
+tests/

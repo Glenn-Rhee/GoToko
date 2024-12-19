@@ -14,9 +14,16 @@ require (
 	github.com/go-sql-driver/mysql v1.8.1 // indirect
 	github.com/jinzhu/inflection v1.0.0 // indirect
 	github.com/jinzhu/now v1.1.5 // indirect
-	github.com/shopspring/decimal v1.4.0 // indirect
+	github.com/shopspring/decimal v1.4.0 // direct
 	github.com/unrolled/render v1.7.0 // indirect
 	golang.org/x/sys v0.13.0 // indirect
-	golang.org/x/text v0.14.0 // indirect
-	gorm.io/driver/mysql v1.5.7 // indirect
+	golang.org/x/text v0.21.0 // indirect
+	gorm.io/driver/mysql v1.5.7 // direct
+)
+
+require (
+	github.com/bxcodec/faker/v4 v4.0.0-beta.3 // direct
+	github.com/google/uuid v1.6.0 // direct
+	github.com/gosimple/slug v1.14.0 // indirect
+	github.com/gosimple/unidecode v1.0.1 // indirect
 )
